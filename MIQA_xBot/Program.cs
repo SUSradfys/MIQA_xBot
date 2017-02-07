@@ -139,6 +139,7 @@ namespace MIQA_xBot
                 {
                     // Send it
                     //scu.SendCMoveImage(daemon, iod, xPort.Xporter.AEtitle, ref msgId);
+                    // Add logging
                 }
             }
         }
