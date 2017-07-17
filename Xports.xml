@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<Xports xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Xporter>
+    <name>MIQA</name>
+    <active>false</active>
+    <ipstring>147.220.155.249</ipstring>
+    <port>104</port>
+    <AEtitle>MIQA_PACS</AEtitle>
+    <SQLstring>SELECT UID=TreatmentRecord.PlanUID, PatientId=Patient.PatientId, PlanSer=RTPlan.PlanSetupSer, MAXDate=CONVERT(DATE, MAX(TreatmentRecordDateTime)) FROM TreatmentRecord INNER JOIN Patient ON Patient.PatientSer = TreatmentRecord.PatientSer INNER JOIN RTPlan ON RTPlan.RTPlanSer = TreatmentRecord.RTPlanSer INNER JOIN PlanSetup ON PlanSetup.PlanSetupSer = RTPlan.PlanSetupSer WHERE PlanSetup.PrescriptionSer IS NOT NULL AND CAST(TreatmentRecordDateTime AS DATE) &gt; 'this.lastActive' GROUP BY TreatmentRecord.PlanUID, Patient.PatientId, RTPlan.PlanSetupSer HAVING MAX(CAST(TreatmentRecordDateTime AS DATE)) less 'todayLag' ORDER BY CONVERT(DATE, MAX(TreatmentRecordDateTime))
+    </SQLstring>
+    <include>
+      <item>plan</item>
+      <item>slices</item>
+      <item>fieldDoses</item>
+      <item>records</item>
+    </include>
+    <lastActivity>2017 - 06 - 09</lastActivity>
+    <allowDoublets>false</allowDoublets>
+  </Xporter>
+</Xports>
