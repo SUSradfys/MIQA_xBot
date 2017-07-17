@@ -10,27 +10,21 @@ namespace sendMail
 {
     public class Program
     {
-        public static string Username = "dicomdaemon";
-        public static string Password = null;
-        public const string SmtpServer = "rsmail020.skane.se";
-
-        private static string Domain = "skane.se";
-        private static string From = Username + "@" + Domain;
-
         static void Main(string[] args)
         {
-            send("dicomdaemon@skane.se", "test", "more text");
+
         }
 
-        public static void send(string recipient, string subject, string body)
+        public static void send(string recipient, string subject, string body, string sender, string domain, string smtp)
         {
+            string pass = null;
             SmtpClient smtpClient = new SmtpClient();
-            NetworkCredential basicCredentials = new NetworkCredential(Username, Password, SmtpServer);
+            NetworkCredential basicCredentials = new NetworkCredential(sender, pass, smtp);
             MailMessage message = new MailMessage();
-            MailAddress fromAdress = new MailAddress(From);
+            MailAddress fromAdress = new MailAddress(sender + "@" + domain);
 
             // setup the host, increase the timeout to 5 minutes
-            smtpClient.Host = SmtpServer;
+            smtpClient.Host = smtp;
             smtpClient.Port = 25;
             smtpClient.UseDefaultCredentials = false;
             smtpClient.Credentials = basicCredentials;

@@ -22,47 +22,60 @@ namespace MIQA_xBot
 {
     class Program
     {
-        // sender end
-        static string AEtitleDB = "ARIADB";
-        static int portDB = 57347;
-
-        // reciever end
-        static string ip = "147.220.155.249";
-        static string AEtitle = "MIQA_PACS";
-        static int port = 104;
-
-        // mail part
-        static string recipient = "dicomdaemon@skane.se";
-        static string subject = "MIQA export";
 
         [STAThread]
         static void Main(string[] args)
         {
+            // Get MainSettings
+            string xml_settings = File.ReadAllText(@"MainSettings.xml");
+            MainSettings settings = xml_settings.ParseXML<MainSettings>();
+
+            int xPortedPlans;
+
+            try
+            {
+                xPortedPlans = Execute(settings);
+                if (xPortedPlans > 0)
+                {
+                    sendMail.Program.send(settings.MAILTO, "MIQA export success", "Number of plans exported: " + xPortedPlans.ToString(), settings.MAIL_USER, settings.MAIL_DOMAIN, settings.SMTP_SERVER);
+                }
+            }
+            catch (Exception exception)
+            {
+                // send main on failure to execute
+                sendMail.Program.send(settings.MAILTO, "MIQA export failure", exception.Message.ToString(), settings.MAIL_USER, settings.MAIL_DOMAIN, settings.SMTP_SERVER);
+            }
+
+            
+        }
+
+        static int Execute(MainSettings settings)
+        {
             List<CFindImageIOD> iods = new List<CFindImageIOD>();
-            Entity daemon = Entity.CreateLocal(AEtitleDB, portDB);
+            Entity daemon = Entity.CreateLocal(settings.DBDAEMON_AETITLE, settings.DBDAEMON_PORT);
 
             // define the local service class
-            var me = Entity.CreateLocal("EvilDICOMC", 50400);
+            var me = Entity.CreateLocal(settings.SCU_AETITLE, settings.SCU_PORT);
             var scu = new DICOMSCU(me);
 
             // define the query builder
             var qb = new QueryBuilder(scu, daemon);
             ushort msgId = 1;
 
-            // define the recievr
-            Entity reciever = new Entity(AEtitle, ip, port);
-            DICOMSCP scp = new DICOMSCP(reciever);
-
             // read the xml file
-            string xml = File.ReadAllText(Settings.xPorterPath);
+            string xml = File.ReadAllText(settings.XporterPath);
             Xports xPort = xml.ParseXML<Xports>();
+
+            // define the recievr
+            Entity reciever = new Entity(xPort.Xporter.AEtitle, xPort.Xporter.ipstring, xPort.Xporter.port);
+            DICOMSCP scp = new DICOMSCP(reciever);
 
             // Query plan
             DataTable plans = new DataTable();
             if (!String.IsNullOrEmpty(xPort.Xporter.SQLstring))
             {
-                SqlInterface.Connect();
-                plans = xPort.Query();
+                SqlInterface.Connect(settings);
+                plans = xPort.Query(settings.LAG_DAYS);
                 SqlInterface.Disconnect();
             }
 
@@ -115,10 +128,12 @@ namespace MIQA_xBot
             // overwrite lastActivity
             if (plans.Rows.Count > 0)
             {
+                // Get last date encountered
                 DateTime lastPlan = (DateTime)plans.Rows[plans.Rows.Count - 1]["MAXDate"];
+                xPort.Xporter.lastActivity = lastPlan.ToString("yyyy-MM-dd");
 
                 // write xml
-                using (FileStream fs = new FileStream(Settings.xPorterPath, FileMode.Create))
+                using (FileStream fs = new FileStream(settings.XporterPath, FileMode.Create))
                 {
                     XmlSerializer _xSer = new XmlSerializer(typeof(Xports));
 
@@ -139,9 +154,13 @@ namespace MIQA_xBot
                 {
                     // Send it
                     //scu.SendCMoveImage(daemon, iod, xPort.Xporter.AEtitle, ref msgId);
-                    // Add logging
                 }
             }
+
+            else
+                return 0;
+
+            return plans.Rows.Count;
         }
     }
 }

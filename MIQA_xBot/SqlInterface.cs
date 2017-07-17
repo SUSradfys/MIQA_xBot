@@ -11,9 +11,9 @@ namespace MIQA_xBot
     {
         private static SqlConnection connection = null;
 
-        public static void Connect()
+        public static void Connect(MainSettings settings)
         {
-            connection = new SqlConnection("Data Source='" + Settings.ARIA_SERVER + "';UID='" + Settings.ARIA_USERNAME + "';PWD='" + Settings.ARIA_PASSWORD + "';Database='" + Settings.ARIA_DATABASE + "';");
+            connection = new SqlConnection("Data Source='" + settings.ARIA_SERVER + "';UID='" + settings.ARIA_USERNAME + "';PWD='" + settings.ARIA_PASSWORD + "';Database='" + settings.ARIA_DATABASE + "';");
             connection.Open();
         }
 

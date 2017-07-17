@@ -1,5 +1,4 @@
-﻿
-using MIQA_xBot;
+﻿using MIQA_xBot;
 using System;
 using System.Data;
 /// <remarks/>
@@ -25,10 +24,11 @@ public partial class Xports
         }
     }
 
-    public DataTable Query()
+    public DataTable Query(int lagDays)
     {
         // Get the current lagDate
-        DateTime lagDate = DateTime.Today.AddDays(-Settings.lagDays);
+        //DateTime lagDate = DateTime.Today.AddDays(-Settings.lagDays);
+        DateTime lagDate = DateTime.Today.AddDays(-lagDays);
         // Replace stuff in the SQLstring
         string sqlQuery = this.Xporter.SQLstring.Replace("this.lastActive", this.Xporter.lastActivity).Replace("less", "<").Replace("todayLag", lagDate.ToString("yyyy-MM-dd")).Trim();
         DataTable plans = SqlInterface.Query(sqlQuery);

@@ -51,16 +51,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ListHandler.cs" />
+    <Compile Include="MainSettings.cs" />
     <Compile Include="ParseHelpers.cs" />
     <Compile Include="Xports.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings.cs" />
     <Compile Include="SqlInterface.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\sendMail\sendMail.csproj">
+      <Project>{1f1c7195-9e8f-4e6d-88f0-fda822f6f607}</Project>
+      <Name>sendMail</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
