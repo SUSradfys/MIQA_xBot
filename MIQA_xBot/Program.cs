@@ -153,7 +153,7 @@ namespace MIQA_xBot
                 foreach (var iod in iods)
                 {
                     // Send it
-                    //scu.SendCMoveImage(daemon, iod, xPort.Xporter.AEtitle, ref msgId);
+                    scu.SendCMoveImage(daemon, iod, xPort.Xporter.AEtitle, ref msgId);
                 }
             }
 
