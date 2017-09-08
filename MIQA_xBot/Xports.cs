@@ -1,6 +1,7 @@
 ﻿using MIQA_xBot;
 using System;
 using System.Data;
+using System.Net;
 /// <remarks/>
 [System.SerializableAttribute()]
 [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -151,6 +152,20 @@ public partial class XportsXporter
         {
             this.includeField = value;
         }
+    }
+
+    internal string getIP()
+    {
+        string ip = String.Empty;
+        try
+        {
+            ip = Dns.GetHostAddresses(ipstring)[0].ToString();
+        }
+        catch
+        {
+            ip = ipstring;
+        }
+        return ip;
     }
 
     /// <remarks/>

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -49,6 +50,7 @@ namespace MIQA_xBot
             
         }
 
+
         static int Execute(MainSettings settings)
         {
             List<CFindImageIOD> iods = new List<CFindImageIOD>();
@@ -67,7 +69,8 @@ namespace MIQA_xBot
             Xports xPort = xml.ParseXML<Xports>();
 
             // define the recievr
-            Entity reciever = new Entity(xPort.Xporter.AEtitle, xPort.Xporter.ipstring, xPort.Xporter.port);
+            //Entity reciever = new Entity(xPort.Xporter.AEtitle, getIP(xPort.Xporter.ipstring), xPort.Xporter.port);
+            Entity reciever = new Entity(xPort.Xporter.AEtitle, xPort.Xporter.getIP(), xPort.Xporter.port);
             DICOMSCP scp = new DICOMSCP(reciever);
 
             // Query plan
@@ -162,5 +165,8 @@ namespace MIQA_xBot
 
             return plans.Rows.Count;
         }
+
+
     }
+
 }
