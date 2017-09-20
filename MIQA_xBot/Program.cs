@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
+using System.ServiceProcess;
 
 /// <summary>
 /// MIQA_xBot is a single purpose implementation of the generalized xBot(https://github.com/SUSradfys/xBot) 
@@ -53,6 +54,18 @@ namespace MIQA_xBot
 
         static int Execute(MainSettings settings)
         {
+            // start by sending mail
+            sendMail.Program.send(settings.MAILTO, "MIQA_xBot initiated", "Export to MIQA will begin now.", settings.MAIL_USER, settings.MAIL_DOMAIN, settings.SMTP_SERVER);
+
+            // verify that the ARIADBDaemon Windows Service is running
+            string serviceName = "vmsdicom_ARIADB";
+            ServiceController sc = new ServiceController(serviceName);
+            if (sc.Status != ServiceControllerStatus.Running)
+            {
+                sc.Start();
+                sendMail.Program.send(settings.MAILTO, "MIQA_xBot started " + serviceName, "The service" + serviceName + "was not running, so I started it for you.", settings.MAIL_USER, settings.MAIL_DOMAIN, settings.SMTP_SERVER);
+            }
+
             List<CFindImageIOD> iods = new List<CFindImageIOD>();
             Entity daemon = Entity.CreateLocal(settings.DBDAEMON_AETITLE, settings.DBDAEMON_PORT);
 
@@ -128,6 +141,21 @@ namespace MIQA_xBot
                 }
             }
 
+            if (xPort.Xporter.active)
+            {
+                Console.WriteLine(iods.Count.ToString());
+                // Remove duplicate UIDs
+                if (!xPort.Xporter.allowDoublets)
+                    iods = ListHandler.Unique(iods);
+
+                Console.WriteLine(iods.Count.ToString());
+                foreach (var iod in iods)
+                {
+                    // Send it
+                    scu.SendCMoveImage(daemon, iod, xPort.Xporter.AEtitle, ref msgId);
+                }
+            }
+
             // overwrite lastActivity
             if (plans.Rows.Count > 0)
             {
@@ -144,26 +172,10 @@ namespace MIQA_xBot
                 }
 
             }
-
             if (xPort.Xporter.active)
-            {
-                Console.WriteLine(iods.Count.ToString());
-                // Remove duplicate UIDs
-                if (!xPort.Xporter.allowDoublets)
-                    iods = ListHandler.Unique(iods);
-
-                Console.WriteLine(iods.Count.ToString());
-                foreach (var iod in iods)
-                {
-                    // Send it
-                    scu.SendCMoveImage(daemon, iod, xPort.Xporter.AEtitle, ref msgId);
-                }
-            }
-
+                return plans.Rows.Count;
             else
                 return 0;
-
-            return plans.Rows.Count;
         }
 
 
