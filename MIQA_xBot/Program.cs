@@ -153,6 +153,8 @@ namespace MIQA_xBot
                 {
                     // Send it
                     scu.SendCMoveImage(daemon, iod, xPort.Xporter.AEtitle, ref msgId);
+                    // We need this to pump messages in debugging
+                    Console.WriteLine(iod.SOPInstanceUID.ToString());
                 }
             }
 
