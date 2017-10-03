@@ -29,7 +29,7 @@ namespace MIQA_xBot
         static void Main(string[] args)
         {
             // Get MainSettings
-            string xml_settings = File.ReadAllText(@"MainSettings.xml");
+            string xml_settings = File.ReadAllText(@"C:\Program Files\MIQA_xBot\MainSettings.xml");
             MainSettings settings = xml_settings.ParseXML<MainSettings>();
 
             int xPortedPlans;
