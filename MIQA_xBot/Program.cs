@@ -57,15 +57,6 @@ namespace MIQA_xBot
             // start by sending mail
             sendMail.Program.send(settings.MAILTO, "MIQA_xBot initiated", "Export to MIQA will begin now.", settings.MAIL_USER, settings.MAIL_DOMAIN, settings.SMTP_SERVER);
 
-            // verify that the ARIADBDaemon Windows Service is running
-            string serviceName = "vmsdicom_ARIADB";
-            ServiceController sc = new ServiceController(serviceName);
-            if (sc.Status != ServiceControllerStatus.Running)
-            {
-                sc.Start();
-                sendMail.Program.send(settings.MAILTO, "MIQA_xBot started " + serviceName, "The service" + serviceName + "was not running, so I started it for you.", settings.MAIL_USER, settings.MAIL_DOMAIN, settings.SMTP_SERVER);
-            }
-
             List<CFindImageIOD> iods = new List<CFindImageIOD>();
             Entity daemon = Entity.CreateLocal(settings.DBDAEMON_AETITLE, settings.DBDAEMON_PORT);
 
